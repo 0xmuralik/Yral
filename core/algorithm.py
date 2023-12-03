@@ -31,23 +31,6 @@ def maximal_set(graph,thresholds):
         
         dd[max_degree_neighbor] = 0
         gamma[candidate] = 1
-        
-    # remaining_max_degree = [(-dd[v],v) for v in V]
-    # heapq.heapify(remaining_max_degree)
-    # while any(gamma[v] < thresholds[v] for v in V):
-    #         print("IN PART TWO")
-    #         degree,u = heapq.heappop(remaining_max_degree)
-    #         if u not in D:
-    #             print(u)
-    #             D.add(u)
-    #             V.remove(u)
-    #         for v in E[u]:
-    #             if v in V:
-    #                 id=remaining_max_degree.index((-dd[v],v))
-    #                 dd[v] -= 1
-    #                 remaining_max_degree[id]=(-dd[v],v)
-    #                 gamma[v] += 1 / len(E[v])
-    #         heapq.heapify(remaining_max_degree)
     
     while any(gamma[v] < thresholds[v] for v in V):
             print("IN PART TWO")
