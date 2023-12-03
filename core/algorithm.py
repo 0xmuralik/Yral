@@ -1,68 +1,69 @@
-def influence_maximization(graph, threshold):
-    V, E = graph  # Unpack the graph into vertices and edges
-    D = set()     # Initialize D as an empty set
+import numpy as np
+import heapq
 
-    # Initialize degree (dd) and influence (γ) values for each vertex
-    dd = {v: len(neighbors) for v, neighbors in E.items()}
-    gamma = {v: 0 for v in V}
-
-    while any(gamma[v] < threshold for v in V - D):
-        # Find vertices with degree 1 and γ < threshold
-        degree_one_candidates = [v for v in V - D if dd[v] == 1 and gamma[v] < threshold]
-
-        if degree_one_candidates:
-            degree_one_neighbors = [E[v][0] for v in degree_one_candidates]
-            s = max(degree_one_candidates, key=dd.get)  # Select vertex with max degree
-            D.add(s)
-            dd[s] = 0
-            gamma[s] = 1
-        else:
-            u = max(V - D, key=dd.get)  # Select vertex with max dd value
-            D.add(u)
-            for v in E[u]:
-                if v in V - D:
-                    dd[v] -= 1
-                    gamma[v] += 1 / len(E[v])
-
-    return D
-
-
-def maximal_set(graph,threshold):
+def maximal_set(graph,thresholds):
     V, E = graph
     D=set()
+    print("Initial ",len(V))
     
     dd = {v: len(neighbors) for v, neighbors in E.items()}
     gamma = {v: 0 for v in V}
     
-    while any(gamma[v] < threshold for v in V - D):
-        
-        degree_one_candidates = [v for v in V - D if dd[v] == 1 and gamma[v] < threshold]
-
-        if degree_one_candidates:
-            candidate=degree_one_candidates[0]
-            max_degree_neighbor =  E[candidate][0]
-            max_degree=0
-            for v in degree_one_candidates:
-                if(dd[E[v][0]]>max_degree):
-                    max_degree=dd[E[v][0]]
-                    max_degree_neighbor=E[v][0]
-                    candidate=v
-            
+    # handle one degree nodes
+    degree_one_candidates = [v for v in V if dd[v] == 1]
+    
+    degree_heap=[(-dd[E[key][0]],E[key][0],key) for key in degree_one_candidates]
+    heapq.heapify(degree_heap)
+    while degree_heap:
+        max_degree,max_degree_neighbor,candidate=heapq.heappop(degree_heap)
+        if max_degree_neighbor not in D:
             print(max_degree_neighbor)
             D.add(max_degree_neighbor)
-            for v in E[max_degree_neighbor]:
-                if v in V - D:
-                    dd[v] -= 1
-                    gamma[v] += 1 / len(E[v])
-            dd[max_degree_neighbor] = 0
-            gamma[candidate] = 1
-        else:
-            u = max(V - D, key=dd.get)
-            D.add(u)
+            if max_degree_neighbor in V:
+                V.remove(max_degree_neighbor)
+        
+        for v in E[max_degree_neighbor]:
+            if v in V:
+                dd[v] -= 1
+                gamma[v] += 1 / len(E[v])
+                if gamma[v]>thresholds[v]:
+                    V.remove(v)
+        
+        dd[max_degree_neighbor] = 0
+        gamma[candidate] = 1
+        
+    # remaining_max_degree = [(-dd[v],v) for v in V]
+    # heapq.heapify(remaining_max_degree)
+    # while any(gamma[v] < thresholds[v] for v in V):
+    #         print("IN PART TWO")
+    #         degree,u = heapq.heappop(remaining_max_degree)
+    #         if u not in D:
+    #             print(u)
+    #             D.add(u)
+    #             V.remove(u)
+    #         for v in E[u]:
+    #             if v in V:
+    #                 id=remaining_max_degree.index((-dd[v],v))
+    #                 dd[v] -= 1
+    #                 remaining_max_degree[id]=(-dd[v],v)
+    #                 gamma[v] += 1 / len(E[v])
+    #         heapq.heapify(remaining_max_degree)
+    
+    while any(gamma[v] < thresholds[v] for v in V):
+            print("IN PART TWO")
+            print("remaining ",len(V))
+            u = max(V,key=dd.get)
+            if u not in D:
+                print(u)
+                D.add(u)
+                if u in V:
+                    V.remove(u)
             for v in E[u]:
-                if v in V - D:
+                if v in V:
                     dd[v] -= 1
                     gamma[v] += 1 / len(E[v])
+                    if gamma[v]>thresholds[v]:
+                        V.remove(v)
                 
     return D
     
@@ -81,9 +82,13 @@ graph = [
 ]
 # ans {B,E}
 
-threshold = 0.5
+np.random.seed(42)
 
-result = maximal_set(graph, threshold)
+thresholds={node: 0.5 for node in graph[0]}
+
+
+result = maximal_set(graph, thresholds)
+print("Thresholds: ",thresholds)
 print("Subset D:", result)
 
 
@@ -108,5 +113,24 @@ graph = [
     }
 ]
 
-result = maximal_set(graph, threshold)
+thresholds={node: 0.5 for node in graph[0]}
+result = maximal_set(graph, thresholds)
+print("Thresholds: ",thresholds)
 print("Subset D:", result)
+
+import pickle
+
+# Load the graph from a file
+
+with open('../utils/graph.pkl', 'rb') as file:
+    loaded_graph = pickle.load(file)
+    graph = []
+    graph.append(set(loaded_graph.keys()))
+    graph.append(loaded_graph)
+    thresholds={node: np.random.rand() for node in graph[0]}
+    result = maximal_set(graph, thresholds)
+    print("Thresholds: ",thresholds)
+    print("Subset D:", result)
+    print("MDS size: ", len(result))
+    with open('mds.pkl', 'wb') as file:
+        pickle.dump(result, file)

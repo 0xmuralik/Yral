@@ -2,6 +2,7 @@ import sys
 import pickle
 
 def add_edge(u,v, graph):
+    print("edge :", u, v)
     # Check if u is in the adjacency list; if not, add it as a key with an empty list as the value
     if u not in graph:
         graph[u] = []
@@ -13,6 +14,7 @@ def add_edge(u,v, graph):
     # Add v to the list of neighbors of u, and u to the list of neighbors of v
     graph[u].append(v)
     graph[v].append(u)
+    print("added")
 
     # return graph
 
@@ -45,5 +47,5 @@ except Exception as e:
 # Serialize and save the graph to a file
 with open('graph.pkl', 'wb') as file:
     pickle.dump(graph, file)
-
+    
 print("Graph has been serialized and saved to 'graph.pkl'.")
