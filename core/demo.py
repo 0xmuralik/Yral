@@ -1,6 +1,5 @@
 import numpy as np
 import heapq
-import pickle
 
 def maximal_set(graph,thresholds):
     V, E = graph
@@ -34,6 +33,7 @@ def maximal_set(graph,thresholds):
         gamma[candidate] = 1
     
     while any(gamma[v] < thresholds[v] for v in V):
+            print("IN PART TWO")
             print("remaining ",len(V))
             u = max(V,key=dd.get)
             if u not in D:
@@ -49,19 +49,54 @@ def maximal_set(graph,thresholds):
                         V.remove(v)
                 
     return D
+    
+
+# Example usage:
+graph = [
+    {'A', 'B', 'C', 'D', 'E', 'F'},
+    {
+        'A': ['B'],
+        'B': ['A', 'C', 'D'],
+        'C': ['B', 'D', 'E'],
+        'D': ['B', 'C', 'E'],
+        'E': ['C', 'D', 'F'],
+        'F': ['E'],
+    }
+]
+# ans {B,E}
 
 np.random.seed(42)
 
-# Load the graph from a file
-with open('../utils/graph.pkl', 'rb') as file:
-    loaded_graph = pickle.load(file)
-    graph = []
-    graph.append(set(loaded_graph.keys()))
-    graph.append(loaded_graph)
-    thresholds={node: np.random.rand() for node in graph[0]}
-    result = maximal_set(graph, thresholds)
-    print("Thresholds: ",thresholds)
-    print("Subset D:", result)
-    print("MDS size: ", len(result))
-    with open('mds.pkl', 'wb') as file:
-        pickle.dump(result, file)
+thresholds={node: 0.5 for node in graph[0]}
+
+
+result = maximal_set(graph, thresholds)
+print("Thresholds: ",thresholds)
+print("Subset D:", result)
+
+
+graph = [
+    {'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15'},
+    {
+        '1':['8','13'],
+        '2':['4'],
+        '3':['5','7','8','11','15'],
+        '4':['2','5','7'],
+        '5':['4','3','6','7','8','15'],
+        '6':['5','7'],
+        '7':['6','5','4','3','8','11','12','13'],
+        '8':['7','5','3','1','14','9','10'],
+        '9':['8'],
+        '10':['8','15'],
+        '11':['7','3'],
+        '12':['7'],
+        '13':['7','1'],
+        '14':['8'],
+        '15':['10','5','3'],
+    }
+]
+
+thresholds={node: 0.5 for node in graph[0]}
+result = maximal_set(graph, thresholds)
+print("Thresholds: ",thresholds)
+print("Subset D:", result)
