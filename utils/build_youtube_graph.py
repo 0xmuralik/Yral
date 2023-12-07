@@ -19,14 +19,14 @@ def add_edge(u,v, graph):
     # return graph
 
 if len(sys.argv) != 2:
-    print("Usage: python read_graph.py <file_path>")
+    print("Usage: python build_youtube_graph.py <file_path>")
     sys.exit(1)
 
 file_path = sys.argv[1]
 
 # Initialize adjacency list for the graph
 graph={}
-lines_to_skip=2
+lines_to_skip=92
 
 try:
     with open(file_path, 'r') as file:

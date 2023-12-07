@@ -1,13 +1,22 @@
 import pickle
+import sys
+
+if len(sys.argv) != 4:
+    print("Usage: python budget.py <graph_path> <mds_path> <budget>")
+    sys.exit(1)
+
+graph_path = sys.argv[1]
+mds_path = sys.argv[2]
+budget = int(sys.argv[3])
 
 graph = []
-with open('../utils/graph.pkl', 'rb') as file:
+with open(graph_path, 'rb') as file:
     loaded_graph = pickle.load(file)
     graph.append(set(loaded_graph.keys()))
     graph.append(loaded_graph)
 
 mds= {}  
-with open('mds.pkl', 'rb') as file:
+with open(mds_path, 'rb') as file:
     mds = pickle.load(file)
 
 tuple_list = [(key, len(graph[1][key])) for key in mds]
@@ -25,8 +34,9 @@ def budget_cap(budget):
     
     return target
 
-target=budget_cap(100000)
+target=budget_cap(budget)
 
-print(len(target))
-print(len(mds))
-print(len(graph[0]))
+with open('target.pkl', 'wb') as file:
+    pickle.dump(target, file)
+
+print("Size of target set is: ", len(target))
