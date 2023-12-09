@@ -58,7 +58,7 @@ with open('../utils/graph-demo2.pkl', 'wb') as file:
 
 # didnt use random thresholds for demos for better understanding
 thresholds={node: 0.5 for node in graph[0]}
-result = algorithm.maximal_set(graph, thresholds)
+result = algorithm.minimal_dominating_set(graph, thresholds)
 print("Thresholds: ",thresholds)
 print("Subset D:", result)
 with open('mds-demo2.pkl', 'wb') as file:

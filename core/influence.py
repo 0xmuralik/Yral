@@ -7,7 +7,7 @@ import sys
 # np.random.seed(42)
 
 if len(sys.argv) != 3:
-    print("Usage: python influence.py <graph_path> <name_to_save_new_mds>")
+    print("Usage: python influence.py <graph_path> <mds_name>")
     sys.exit(1)
 
 graph_path = sys.argv[1]
@@ -20,9 +20,10 @@ with open(graph_path, 'rb') as file:
     graph.append(set(loaded_graph.keys()))
     graph.append(loaded_graph)
     thresholds={node: np.random.rand() for node in graph[0]}
-    result = algorithm.maximal_set(graph, thresholds)
+    result = algorithm.minimal_dominating_set(graph, thresholds)
     print("Thresholds: ",thresholds)
     print("Subset D:", result)
     print("MDS size: ", len(result))
     with open(mds_path, 'wb') as file:
         pickle.dump(result, file)
+        print("MDS saved to ",mds_path)
